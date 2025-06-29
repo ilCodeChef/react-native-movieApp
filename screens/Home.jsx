@@ -1,41 +1,43 @@
-import { View, Button, StyleSheet, TextInput, FlatList, ActivityIndicator  } from "react-native"
+import { View, StyleSheet, TextInput, FlatList, ActivityIndicator, TouchableOpacity, Text  } from "react-native"
 import React , { useState, useEffect} from 'react'
 import { getPopularMovies, searchMovie } from "../services/api"
 import MovieCard from "../components/MovieCard"
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Home() {
     const [searchQuery, setQuerySearch] = useState("")
     const [movies, setMovies] = useState([])
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [isSearchActive, setIsSearchActive] = useState(false)
+
+    const loadPopularMovies = async () => {
+        setLoading(true)
+        try {
+            const popularMovies = await getPopularMovies();
+            setMovies(popularMovies)
+            setIsSearchActive(false)
+            setError(null)
+        } catch (err) {
+            console.log(err)
+            setError(err)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     useEffect(() => {
-        const loadPopularMovies = async () => {
-            try {
-                const popularMovies = await getPopularMovies();
-                setMovies(popularMovies)
-            } catch (err) {
-                console.log(err)
-                setError(err)
-            } finally {
-                setLoading(false)
-            }
-        } 
-
         loadPopularMovies()
     }, [])
 
-    const handleSearch = async (e) => {
-        
-        if (!searchQuery.trim()) return
-        if (loading) return
+    const handleSearch = async () => {
+        if (!searchQuery.trim() || loading) return
 
         setLoading(true)
 
         try {
             const searchResult = await searchMovie(searchQuery)
             setMovies(searchResult)
+            setIsSearchActive(true)
             setError(null)
         } catch (err) {
             console.log(err)
@@ -46,9 +48,19 @@ function Home() {
         setQuerySearch("")
     }
 
+    const handleBack = () => {
+        loadPopularMovies()
+        setQuerySearch("")
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.searchForm}>
+                {isSearchActive && (
+                <TouchableOpacity onPress={handleBack} style={[styles.buttonStyle, styles.backButton]}>
+                    <Text style={styles.buttonText}>Back</Text>
+                </TouchableOpacity>
+                )}
                 <TextInput 
                     style={styles.searchInput} 
                     placeholder="Search for movies"
@@ -56,7 +68,9 @@ function Home() {
                     value={searchQuery}
                     onChangeText={setQuerySearch}
                 />
-                <Button title="Search" onPress={handleSearch}/>
+                <TouchableOpacity onPress={handleSearch} style={[styles.buttonStyle, styles.searchButton]}>
+                    <Text style={styles.buttonText}>Search</Text>
+                </TouchableOpacity>
             </View>
 
             { loading ? (
@@ -97,10 +111,23 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
+  buttonStyle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+    padding: 4,
+    backgroundColor: '#333',
+  },
   searchButton: {
     marginLeft: 8,
-    justifyContent: 'center',
   },
+  backButton: {
+    marginRight: 8,
+  },
+  buttonText: {
+    fontSize: 16,
+    color: 'red',
+  }
 });
 
 export default Home
