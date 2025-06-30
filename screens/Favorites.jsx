@@ -4,7 +4,8 @@ import MovieCard from '../components/MovieCard'
 
 export default function Favorites() {
     const {favorites} = useMovieContext()
-    if (favorites && favorites.length > 0) {
+    const hasFavorite = favorites && favorites.length > 0
+    if (hasFavorite) {
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>Your Favorites</Text>

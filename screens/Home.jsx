@@ -1,5 +1,5 @@
 import { View, StyleSheet, TextInput, FlatList, ActivityIndicator, TouchableOpacity, Text  } from "react-native"
-import React , { useState, useEffect} from 'react'
+import { useState, useEffect} from 'react'
 import { getPopularMovies, searchMovie } from "../services/api"
 import MovieCard from "../components/MovieCard"
 
@@ -18,8 +18,8 @@ function Home() {
             setIsSearchActive(false)
             setError(null)
         } catch (err) {
-            console.log(err)
-            setError(err)
+            console.log(error)
+            setError(error)
         } finally {
             setLoading(false)
         }
@@ -30,8 +30,8 @@ function Home() {
     }, [])
 
     const handleSearch = async () => {
-        if (!searchQuery.trim() || loading) return
-
+        const noSearch = !searchQuery.trim() || loading
+        if (noSearch) return
         setLoading(true)
 
         try {
@@ -40,7 +40,7 @@ function Home() {
             setIsSearchActive(true)
             setError(null)
         } catch (err) {
-            console.log(err)
+            console.log(error)
             setError("Failed to search the movie")
         } finally {
             setLoading(false)
@@ -74,7 +74,7 @@ function Home() {
             </View>
 
             { loading ? (
-                <ActivityIndicator size="large" style={{marginTop:20}}/> 
+                <ActivityIndicator size="large" style={styles.loading}/> 
             ) : (
                 <FlatList 
                     data={movies}
@@ -127,6 +127,9 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     color: 'red',
+  },
+  loading: {
+    marginTop: 20, 
   }
 });
 
