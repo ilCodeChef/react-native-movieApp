@@ -1,11 +1,11 @@
 import { MovieProvider } from './context/MovieContext';
-import BottomNavigator from './components/BottomNavigator';
+import AppNavigator from './components/AppNavigator';
 
 
 export default function App() {
-  return (
-    <MovieProvider>
-      <BottomNavigator/>
-    </MovieProvider>
-  )
+	return (
+		<MovieProvider>
+			<AppNavigator/>
+		</MovieProvider>
+	)
 }

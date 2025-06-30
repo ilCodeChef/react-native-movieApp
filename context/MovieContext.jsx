@@ -33,9 +33,6 @@ export const MovieProvider = ({ children }) => {
         saveFavorites()
     }, [favorites])
 
-
-
-
     const addToFavorites = (movie) => {
         if (!movie || !movie.id) return;
         setFavorites((prev) => [...prev, movie]);
